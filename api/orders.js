@@ -118,9 +118,10 @@ module.exports = async (req, res) => {
       message: "Order received successfully."
     });
 
-  } catch (error) {
+} catch (error) {
+    console.error("Order API error:", error);
+
     return res.status(500).json({
       error: "Could not process the order."
     });
   }
-};
