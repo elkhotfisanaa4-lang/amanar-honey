@@ -110,6 +110,46 @@ document.querySelectorAll("[data-fr-ph]").forEach(function(e){if(!e.dataset.arPh
 $("lang").textContent=f?"العربية":"Français";calc();try{localStorage.setItem("lang",f?"fr":"ar")}catch(x){}}
 $("lang").onclick=function(){setLang(!fr)};
 try{if(localStorage.getItem("lang")==="fr")setLang(true)}catch(x){}
+  $("f").onsubmit=async function(e){
+  e.preventDefault();
+
+  var data={
+    full_name:$("n").value.trim(),
+    phone:$("t").value.trim(),
+    city:$("c").value.trim(),
+    address:$("a").value.trim(),
+    size_g:Number($("p").value),
+    quantity:Number($("q").value)
+  };
+
+  try{
+    var response=await fetch("/api/orders",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(data)
+    });
+
+    var result=await response.json();
+
+    if(!response.ok || !result.success){
+      throw new Error("Order failed");
+    }
+
+    var m=fr
+      ?"Bonjour, je souhaite commander :\nNoix au miel "+data.size_g+"g x"+data.quantity+"\nNom : "+data.full_name+"\nTéléphone : "+data.phone+"\nVille : "+data.city+"\nAdresse : "+data.address
+      :"سلام، بغيت نطلب:\nمكسرات بالعسل "+data.size_g+"g x"+data.quantity+"\nالاسم: "+data.full_name+"\nالهاتف: "+data.phone+"\nالمدينة: "+data.city+"\nالعنوان: "+data.address;
+
+    $("wa").href="https://wa.me/"+WA+"?text="+encodeURIComponent(m);
+    $("f").style.display="none";
+    $("ok").style.display="grid";
+    $("ok").scrollIntoView({behavior:"smooth"});
+
+  }catch(error){
+    alert(fr
+      ?"Une erreur est survenue. Veuillez réessayer."
+      :"وقع مشكل فإرسال الطلب. عاودي حاولي من فضلك.");
+  }
+};
 </script>
 </body>
 </html>
