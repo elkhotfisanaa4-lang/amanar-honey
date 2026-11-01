@@ -113,7 +113,32 @@ module.exports = async (req, res) => {
     if (!orderResponse.ok) {
       throw new Error("Could not save order.");
     }
+const sheetsUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
+if (sheetsUrl) {
+  try {
+    await fetch(sheetsUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        order_id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        full_name: full_name.trim(),
+        phone: phone.trim(),
+        city: city.trim(),
+        address: address.trim(),
+        product: `Amanar Honey ${size}g`,
+        quantity: qty,
+        total: total,
+        status: "pending"
+      })
+    });
+  } catch (error) {
+    console.error("Google Sheets sync error:", error.message);
+  }
+}
     return res.status(201).json({
       success: true,
       message: "Order received successfully."
