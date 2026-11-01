@@ -69,10 +69,11 @@ module.exports = async (req, res) => {
       }
     );
 
-    if (!customerResponse.ok) {
-      throw new Error("Could not save customer.");
-    }
-
+  if (!customerResponse.ok) {
+  const details = await customerResponse.text();
+  console.error("Supabase customer error:", customerResponse.status, details);
+  throw new Error("Could not save customer.");
+}
     const customers = await customerResponse.json();
     const customerId = customers[0]?.id;
 
