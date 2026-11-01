@@ -113,6 +113,8 @@ module.exports = async (req, res) => {
     if (!orderResponse.ok) {
       throw new Error("Could not save order.");
     }
+    const savedOrders = await orderResponse.json();
+const orderId = savedOrders[0].id;
 const sheetsUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
 if (sheetsUrl) {
@@ -123,7 +125,7 @@ if (sheetsUrl) {
         "Content-Type": "text/plain;charset=utf-8"
       },
       body: JSON.stringify({
-        order_id: crypto.randomUUID(),
+order_id: orderId,
         date: new Date().toISOString(),
         full_name: full_name.trim(),
         phone: phone.trim(),
